@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,16 +7,27 @@ import { decryptSecret } from '@/utils/crypto';
 import { CopyIcon, EyeIcon, EyeOffIcon } from 'lucide-react';
 
 interface ViewSecretDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   secret: any;
-  onClose: () => void;
 }
 
-export const ViewSecretDialog = ({ secret, onClose }: ViewSecretDialogProps) => {
+export const ViewSecretDialog = ({ open, onOpenChange, secret }: ViewSecretDialogProps) => {
   const [masterPassword, setMasterPassword] = useState('');
   const [decryptedValue, setDecryptedValue] = useState('');
   const [isDecrypting, setIsDecrypting] = useState(false);
   const [error, setError] = useState('');
   const [showSecret, setShowSecret] = useState(false);
+
+  // Reset state when dialog opens/closes or secret changes
+  useEffect(() => {
+    if (!open) {
+      setMasterPassword('');
+      setDecryptedValue('');
+      setError('');
+      setShowSecret(false);
+    }
+  }, [open, secret]);
 
   const handleDecrypt = async () => {
     setIsDecrypting(true);
@@ -34,15 +45,13 @@ export const ViewSecretDialog = ({ secret, onClose }: ViewSecretDialogProps) => 
 
   const handleCopy = () => {
     navigator.clipboard.writeText(decryptedValue);
-    setTimeout(() => {
-      navigator.clipboard.writeText('');
-    }, 30000); // Auto-clear after 30 seconds
+    // Could show a toast here
   };
 
   if (!secret) return null;
 
   return (
-    <Dialog open={!!secret} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{secret.name}</DialogTitle>
@@ -99,10 +108,18 @@ export const ViewSecretDialog = ({ secret, onClose }: ViewSecretDialogProps) => 
                     </Button>
                   </div>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  ⏱️ Clipboard will auto-clear in 30 seconds
-                </p>
               </div>
+
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => {
+                  setDecryptedValue('');
+                  setMasterPassword('');
+                }}
+              >
+                Lock Secret
+              </Button>
             </>
           )}
         </div>

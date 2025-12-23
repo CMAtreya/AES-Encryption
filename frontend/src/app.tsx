@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { LoginPage } from './pages/LoginPage';
 import { Dashboard } from './pages/Dashboard';
 import { EncryptionVisualizer } from './pages/EncryptionVisualizer';
@@ -6,22 +6,36 @@ import { EncryptionVisualizer } from './pages/EncryptionVisualizer';
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentView, setCurrentView] = useState<'dashboard' | 'visualizer'>('dashboard');
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsAuthenticated(true);
+    }
+    setIsLoading(false);
+  }, []);
 
   const handleLogin = () => {
     setIsAuthenticated(true);
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('token');
     setIsAuthenticated(false);
     setCurrentView('dashboard');
   };
+
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
 
   if (!isAuthenticated) {
     return <LoginPage onLogin={handleLogin} />;
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background text-foreground">
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -30,31 +44,29 @@ function App() {
             </div>
             <h1 className="text-xl font-bold">SecureVault AI</h1>
           </div>
-          
+
           <nav className="flex items-center gap-4">
             <button
               onClick={() => setCurrentView('dashboard')}
-              className={`px-4 py-2 rounded-md transition ${
-                currentView === 'dashboard'
+              className={`px-4 py-2 rounded-md transition text-sm font-medium ${currentView === 'dashboard'
                   ? 'bg-primary text-primary-foreground'
-                  : 'hover:bg-secondary'
-              }`}
+                  : 'hover:bg-muted'
+                }`}
             >
               Dashboard
             </button>
             <button
               onClick={() => setCurrentView('visualizer')}
-              className={`px-4 py-2 rounded-md transition ${
-                currentView === 'visualizer'
+              className={`px-4 py-2 rounded-md transition text-sm font-medium ${currentView === 'visualizer'
                   ? 'bg-primary text-primary-foreground'
-                  : 'hover:bg-secondary'
-              }`}
+                  : 'hover:bg-muted'
+                }`}
             >
               Encryption Visualizer
             </button>
             <button
               onClick={handleLogout}
-              className="px-4 py-2 rounded-md hover:bg-destructive hover:text-destructive-foreground transition"
+              className="px-4 py-2 rounded-md text-sm font-medium text-destructive hover:bg-destructive/10 transition"
             >
               Logout
             </button>

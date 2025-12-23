@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { PlayIcon, PauseIcon, SkipForwardIcon } from 'lucide-react';
+import { PlayIcon, SkipForwardIcon } from 'lucide-react';
 
 export const EncryptionVisualizer = () => {
   const [plaintext, setPlaintext] = useState('Hello SecureVault');
@@ -141,9 +141,8 @@ export const EncryptionVisualizer = () => {
         {steps.map((step, idx) => (
           <Card
             key={idx}
-            className={`transition-all duration-500 ${
-              idx === currentStep ? 'ring-2 ring-primary scale-105 encryption-step active' : 'opacity-50'
-            } ${idx < currentStep ? 'opacity-75' : ''} encryption-step`}
+            className={`transition-all duration-500 ${idx === currentStep ? 'ring-2 ring-primary scale-105 encryption-step active' : 'opacity-50'
+              } ${idx < currentStep ? 'opacity-75' : ''} encryption-step`}
           >
             <CardHeader>
               <div className="flex items-center justify-between">

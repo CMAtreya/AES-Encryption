@@ -49,7 +49,7 @@ export const deriveKey = async (
   return crypto.subtle.deriveKey(
     {
       name: 'PBKDF2',
-      salt: salt,
+      salt: salt as BufferSource,
       iterations: iterations,
       hash: 'SHA-256',
     },
@@ -83,7 +83,7 @@ export const encryptSecret = async (
   const encryptedBuffer = await crypto.subtle.encrypt(
     {
       name: 'AES-GCM',
-      iv: iv,
+      iv: iv as BufferSource,
       tagLength: 128, // 128-bit authentication tag
     },
     key,
@@ -119,9 +119,9 @@ export const decryptSecret = async (
     const authTag = base64ToArrayBuffer(encryptedData.authTag);
 
     // Combine ciphertext and auth tag
-    const combined = new Uint8Array(ciphertext.length + authTag.length);
+    const combined = new Uint8Array(ciphertext.byteLength + authTag.byteLength);
     combined.set(new Uint8Array(ciphertext), 0);
-    combined.set(new Uint8Array(authTag), ciphertext.length);
+    combined.set(new Uint8Array(authTag), ciphertext.byteLength);
 
     // Derive decryption key
     const key = await deriveKey(masterPassword, new Uint8Array(salt));
