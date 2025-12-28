@@ -21,8 +21,22 @@ connectDB();
 app.use(helmet());
 
 // CORS Configuration
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5175',
+  process.env.CLIENT_URL,
+  process.env.MONGODB_URI
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -64,7 +78,7 @@ app.get('/api/health', (req, res) => {
 // Error Handling Middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  
+
   res.status(err.status || 500).json({
     status: 'error',
     message: err.message || 'Internal Server Error',
