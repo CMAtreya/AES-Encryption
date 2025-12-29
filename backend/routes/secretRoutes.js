@@ -9,7 +9,7 @@ import {
   createOneTimeLink,
   getOneTimeSecret,
   shareSecret
-} from '../controller/secretController.js';
+} from '../controller/secretcontroller.js';
 import { protect } from '../middleware/auth.js';
 import { secretValidation, validate } from '../middleware/validation.js';
 
