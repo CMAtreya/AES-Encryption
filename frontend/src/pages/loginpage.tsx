@@ -32,7 +32,15 @@ export const LoginPage = ({ onLogin }: LoginPageProps) => {
       }
       onLogin();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Authentication failed');
+      if (err.response?.data?.errors && Array.isArray(err.response.data.errors)) {
+        // Handle express-validator errors
+        const validationErrors = err.response.data.errors
+          .map((e: any) => e.msg)
+          .join('. ');
+        setError(validationErrors);
+      } else {
+        setError(err.response?.data?.message || 'Authentication failed');
+      }
     } finally {
       setIsLoading(false);
     }

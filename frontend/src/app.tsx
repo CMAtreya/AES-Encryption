@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { LoginPage } from './pages/LoginPage';
 import { Dashboard } from './pages/Dashboard';
-import { EncryptionVisualizer } from './pages/EncryptionVisualizer';
+import { EncryptionVisualizer } from './pages/encryptionVisualizer';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
